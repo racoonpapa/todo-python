@@ -3,7 +3,7 @@ import json
 from enum import Enum
 from datetime import date
 from dataclasses import dataclass, asdict
-from typing import Optional, List
+from typing import Optional, Dict
 
 
 class Priority(Enum):
@@ -53,30 +53,30 @@ class TodoItem:
         return data
 
     @classmethod
-    def from_data(cls, data):
+    def from_dict(cls, data):
         data['priority'] = Priority(data['priority'])
         return cls(**data)
 
 
 @dataclass
 class TodoList:
-    items: List[TodoItem]
+    items: Dict[str, TodoItem]
 
     def __str__(self):
-        return '\n'.join(str(el) for el in self.items)
+        return '\n'.join(str(el) for el in self.items.values())
 
     def __init__(self, items=None):
         if items is None:
-            items = []
+            items = {}
         self.items = items
 
     def to_json(self) -> str:
-        return json.dumps([el.to_dict() for el in self.items], indent=2)
+        return json.dumps([item.to_dict() for item in self.items.values()])
 
     @classmethod
     def from_json(cls, data: str):
-        json_list = json.loads(data)
-        return cls([TodoItem.from_data(el) for el in json_list])
+        json_array = json.loads(data)
+        return cls({item['id']: TodoItem.from_dict(item) for item in json_array})
 
 
 if __name__ == '__main__':
@@ -93,5 +93,7 @@ if __name__ == '__main__':
         new_content = items.to_json()
         end_time = time.time_ns()
         elapsed_to = (end_time - start_time) * 0.000000001
+
+        print(new_content)
 
         print(f"from_json - elapsed: {elapsed_from}s, to_json - elapsed: {elapsed_to}s")
