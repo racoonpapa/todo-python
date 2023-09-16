@@ -62,8 +62,9 @@ class TodoItem:
 class TodoList:
     items: Dict[str, TodoItem]
 
-    def __str__(self):
-        return '\n'.join(str(el) for el in self.items.values())
+    def print(self):
+        for item in self.items.values():
+            print(str(item))
 
     def __init__(self, items=None):
         if items is None:
@@ -87,13 +88,11 @@ if __name__ == '__main__':
         end_time = time.time_ns()
         elapsed_from = (end_time - start_time) * 0.000000001
 
-        print(items)
+        items.print()
 
         start_time = time.time_ns()
         new_content = items.to_json()
         end_time = time.time_ns()
         elapsed_to = (end_time - start_time) * 0.000000001
-
-        print(new_content)
 
         print(f"from_json - elapsed: {elapsed_from}s, to_json - elapsed: {elapsed_to}s")
