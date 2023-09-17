@@ -1,12 +1,12 @@
 import time
 import json
-from enum import Enum
+from enum import IntEnum
 from datetime import date
 from dataclasses import dataclass, asdict
 from typing import Optional, Dict
 
 
-class Priority(Enum):
+class Priority(IntEnum):
     NONE = 0
     LOW = 1
     MEDIUM = 2
@@ -26,7 +26,7 @@ class Priority(Enum):
 class TodoItem:
     id: str = ""
     content: str = ""
-    priority: Priority = Priority.NONE
+    priority: int = 0
     done: bool = False
     due_date: Optional[date] = None
 
@@ -41,20 +41,14 @@ class TodoItem:
     def __str__(self):
         done_str = "x" if self.done is True else " "
         out = f"[{done_str}] {self.content}"
-        if self.priority != 0:
-            out = out + f" [{self.priority}]"
+        if self.priority != Priority.NONE:
+            out = out + f" [{Priority(self.priority)}]"
         if self.due_date is not None:
             out = out + f" ({self.due_date})"
         return out
 
-    def to_dict(self):
-        data = asdict(self)
-        data['priority'] = self.priority.value
-        return data
-
     @classmethod
     def from_dict(cls, data):
-        data['priority'] = Priority(data['priority'])
         return cls(**data)
 
 
@@ -72,7 +66,7 @@ class TodoList:
         self.items = items
 
     def to_json(self) -> str:
-        return json.dumps([item.to_dict() for item in self.items.values()])
+        return json.dumps([asdict(item) for item in self.items.values()])
 
     @classmethod
     def from_json(cls, data: str):
@@ -88,9 +82,13 @@ if __name__ == '__main__':
         end_time = time.time_ns()
         elapsed_from = (end_time - start_time) * 0.000000001
 
+        # items.print()
+
         start_time = time.time_ns()
         new_content = items.to_json()
         end_time = time.time_ns()
         elapsed_to = (end_time - start_time) * 0.000000001
+
+        # print(new_content)
 
         print(f"from_json - elapsed: {elapsed_from}s, to_json - elapsed: {elapsed_to}s")
