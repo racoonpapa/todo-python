@@ -88,8 +88,6 @@ if __name__ == '__main__':
         end_time = time.time_ns()
         elapsed_from = (end_time - start_time) * 0.000000001
 
-        items.print()
-
         start_time = time.time_ns()
         new_content = items.to_json()
         end_time = time.time_ns()
